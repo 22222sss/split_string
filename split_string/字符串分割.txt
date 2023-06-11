@@ -1,0 +1,134 @@
+#include<iostream>
+#include<string.h>
+#include<string>
+#include<vector>
+#pragma warning(disable:4996)
+using namespace std;
+
+char* f(char* str, const char* delim)
+{
+    int i = 0;
+    static char* next_start = NULL; //保存到静态存储区，函数返回后不会被销毁
+
+    if (str == NULL && (str = next_start) == NULL)
+    {
+        return NULL;
+    }
+
+    char* s = str;
+    const char* t = NULL;
+
+    while (*s)
+    {
+        t = delim;
+
+        while (*t)
+        {
+            if (*t == *s)
+            {
+                next_start = s + 1;
+
+                if (s == str)    //第一个字符就是分隔符
+                {
+                    str = next_start;
+                    break;
+                }
+                else
+                {
+                    *s = '\0';
+                    return str;
+                }
+            }
+            else
+            {
+                t++;
+            }
+        }
+
+        s++;
+    }
+
+    if (*s =='\0')   //如果最后一个字符不是分隔符，将字符串结尾设置为'\0'，并返回原始字符串指针
+    {
+        next_start = NULL;
+        return str;
+    }
+
+    return NULL;
+}
+vector<string> split(char* s)
+{
+    char* p = f(s, "\t ");
+    vector<string> words;
+    while (p) {
+        words.push_back(p);
+        p = f(NULL, "\t ");
+    }
+    return words;
+}
+
+void testStr(const char* input) {
+    if (input == "")
+    {
+        cout << "input is empty" << endl;
+        return;
+    }
+    char pc[100];
+    strcpy(pc, input);
+    vector<string>test = split(pc);
+    for (auto& word : test)
+    {
+        cout << "\"" << word << "\" ";
+    }
+    cout << endl;
+}
+
+void test_split() {
+    testStr("a b c");
+    testStr(". 123.   33");
+    testStr(" ");
+    testStr("   ");
+    testStr("");
+}
+
+
+
+
+
+
+
+int main(int argc, char* argv[])
+{
+   // cout << argv[0]<<endl;
+    if (argc == 2 && strcmp(argv[1], "-t") == 0)
+    {
+        test_split();
+        return 0;
+    }
+
+    string str;
+    while (getline(cin, str))
+    {
+        if (str == "")
+        {
+            cout << "input is empty" << endl;
+            system("pause");
+            return 0;
+        }
+
+
+        char* s = new char[str.size() + 1];
+        strcpy(s,str.c_str());
+        
+
+        vector<string> words = split(s);
+
+        for (auto& word : words)
+        {
+            cout << "\"" << word << "\" ";
+        }
+        cout << endl;
+    }
+    system("pause");
+    return 0;
+}
